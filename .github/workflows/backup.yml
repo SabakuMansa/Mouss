@@ -1,0 +1,42 @@
+name: Sauvegarde hebdomadaire de la base de données
+
+on:
+  schedule:
+    # Tous les lundis à 3h du matin (heure UTC)
+    - cron: "0 3 * * 1"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: backups
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Récupère le code du script de sauvegarde depuis dev
+        run: git checkout origin/dev -- scripts/backup.mjs package.json package-lock.json
+
+      - name: Installe les dépendances
+        run: npm install @supabase/supabase-js --no-save
+
+      - name: Exécute la sauvegarde
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        run: node scripts/backup.mjs
+
+      - name: Publie la sauvegarde sur la branche "backups"
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add backups/
+          git commit -m "Sauvegarde automatique $(date +%Y-%m-%d)" || echo "Rien de nouveau à sauvegarder"
+          git push origin backups
