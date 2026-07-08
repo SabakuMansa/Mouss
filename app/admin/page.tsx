@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { CalendarClock } from "lucide-react";
+import { CalendarClock, Users } from "lucide-react";
 
 const sections = [
   { href: "/admin/matchs", label: "Matchs & résultats", icon: CalendarClock, description: "Calendrier de la saison" },
+  { href: "/admin/joueurs", label: "Joueurs & staff", icon: Users, description: "Effectif Sénior, U18 et coachs" },
 ];
 
 export default function AdminDashboard() {

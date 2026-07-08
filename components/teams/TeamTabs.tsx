@@ -4,9 +4,9 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { PositionGroup } from "@/components/teams/PositionGroup";
-import { seniorRoster, u18Roster, coachingStaff } from "@/lib/data/roster";
 import { PlayerCard } from "@/components/teams/PlayerCard";
 import { Stagger, StaggerItem } from "@/components/ui/RevealOnScroll";
+import type { Coach, PositionGroup as PositionGroupType } from "@/lib/types";
 
 const TABS = [
   { id: "senior", label: "Sénior" },
@@ -16,7 +16,13 @@ const TABS = [
 
 type TabId = (typeof TABS)[number]["id"];
 
-export function TeamTabs() {
+interface TeamTabsProps {
+  seniorRoster: PositionGroupType[];
+  u18Roster: PositionGroupType[];
+  coachingStaff: Coach[];
+}
+
+export function TeamTabs({ seniorRoster, u18Roster, coachingStaff }: TeamTabsProps) {
   const [active, setActive] = useState<TabId>("senior");
 
   return (
