@@ -1,11 +1,12 @@
 import Link from "next/link";
-import { CalendarClock, Users, ImageIcon, Handshake } from "lucide-react";
+import { CalendarClock, Users, ImageIcon, Handshake, Settings } from "lucide-react";
 
 const sections = [
   { href: "/admin/matchs", label: "Matchs & résultats", icon: CalendarClock, description: "Calendrier de la saison" },
   { href: "/admin/joueurs", label: "Joueurs & staff", icon: Users, description: "Effectif Sénior, U18 et coachs" },
   { href: "/admin/galerie", label: "Galerie", icon: ImageIcon, description: "Photos du club" },
   { href: "/admin/partenaires", label: "Partenaires", icon: Handshake, description: "Sponsors et partenaires" },
+  { href: "/admin/infos", label: "Infos pratiques", icon: Settings, description: "Adresse, horaires, réseaux sociaux" },
 ];
 
 export default function AdminDashboard() {

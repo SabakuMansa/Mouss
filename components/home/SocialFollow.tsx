@@ -2,24 +2,16 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { Stagger, StaggerItem } from "@/components/ui/RevealOnScroll";
 import { FacebookIcon, InstagramIcon } from "@/components/ui/SocialIcons";
-import { contactInfo } from "@/lib/data/contact";
+import { getSiteSettings } from "@/lib/supabase/settings";
 
-const socials = [
-  {
-    name: "Facebook",
-    handle: "mousfootus",
-    href: contactInfo.facebookUrl,
-    icon: FacebookIcon,
-  },
-  {
-    name: "Instagram",
-    handle: "mousquetairesfootus",
-    href: contactInfo.instagramUrl,
-    icon: InstagramIcon,
-  },
-];
+export async function SocialFollow() {
+  const settings = await getSiteSettings();
 
-export function SocialFollow() {
+  const socials = [
+    { name: "Facebook", handle: "mousfootus", href: settings.facebook_url, icon: FacebookIcon },
+    { name: "Instagram", handle: "mousquetairesfootus", href: settings.instagram_url, icon: InstagramIcon },
+  ].filter((social): social is typeof social & { href: string } => Boolean(social.href));
+
   return (
     <section className="bg-offwhite-50 py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-10">

@@ -23,9 +23,10 @@ import { AnimatedCounter } from "@/components/ui/AnimatedCounter";
 import { Button } from "@/components/ui/Button";
 import { ProfileCard } from "@/components/join/ProfileCard";
 import { AdvantageCard } from "@/components/join/AdvantageCard";
-import { recruitProfiles, advantages, practicalInfo } from "@/lib/data/join";
+import { recruitProfiles, advantages } from "@/lib/data/join";
 import { club } from "@/lib/data/club";
 import { honors } from "@/lib/data/honors";
+import { getSiteSettings } from "@/lib/supabase/settings";
 
 export const metadata: Metadata = {
   title: "Nous rejoindre",
@@ -47,25 +48,27 @@ const titleCount = honors.reduce(
 );
 const yearsOfHistory = new Date().getFullYear() - club.foundedYear;
 
-const steps = [
-  {
-    number: "01",
-    title: "Viens nous rencontrer",
-    text: `Passe à un entraînement, sans engagement : ${practicalInfo.schedule}, au ${practicalInfo.venue}.`,
-  },
-  {
-    number: "02",
-    title: "Contacte-nous",
-    text: "Une question avant de venir ? Écris-nous, on te répond rapidement pour préparer ta venue.",
-  },
-  {
-    number: "03",
-    title: "Inscris-toi",
-    text: "Convaincu(e) ? Finalise ton adhésion en ligne pour la saison 2025-2026 via HelloAsso.",
-  },
-];
+export default async function JoinPage() {
+  const settings = await getSiteSettings();
 
-export default function JoinPage() {
+  const steps = [
+    {
+      number: "01",
+      title: "Viens nous rencontrer",
+      text: `Passe à un entraînement, sans engagement : ${settings.schedule}, au ${settings.venue}.`,
+    },
+    {
+      number: "02",
+      title: "Contacte-nous",
+      text: "Une question avant de venir ? Écris-nous, on te répond rapidement pour préparer ta venue.",
+    },
+    {
+      number: "03",
+      title: "Inscris-toi",
+      text: "Convaincu(e) ? Finalise ton adhésion en ligne pour la saison 2025-2026 via HelloAsso.",
+    },
+  ];
+
   return (
     <>
       <section className="relative flex min-h-[85svh] items-center overflow-hidden bg-navy-950">
@@ -91,10 +94,10 @@ export default function JoinPage() {
             niveau.
           </p>
           <div className="mt-10 flex flex-wrap items-center gap-4">
-            <Button href={practicalInfo.helloAssoUrl} icon={ExternalLink}>
+            <Button href={settings.helloasso_url ?? "#"} icon={ExternalLink}>
               M&apos;inscrire maintenant
             </Button>
-            <Button href={`mailto:${practicalInfo.email}`} variant="secondary" icon={Send}>
+            <Button href={`mailto:${settings.email}`} variant="secondary" icon={Send}>
               Poser une question
             </Button>
           </div>
@@ -198,31 +201,31 @@ export default function JoinPage() {
               <li className="flex items-start gap-3">
                 <MapPin className="mt-0.5 size-5 shrink-0" />
                 <span>
-                  {practicalInfo.venue} — {practicalInfo.address}
+                  {settings.venue} — {settings.address}
                 </span>
               </li>
               <li className="flex items-start gap-3">
                 <CalendarClock className="mt-0.5 size-5 shrink-0" />
-                <span>Entraînements : {practicalInfo.schedule}</span>
+                <span>Entraînements : {settings.schedule}</span>
               </li>
               <li className="flex items-start gap-3">
                 <Mail className="mt-0.5 size-5 shrink-0" />
-                <a href={`mailto:${practicalInfo.email}`} className="underline underline-offset-2">
-                  {practicalInfo.email}
+                <a href={`mailto:${settings.email}`} className="underline underline-offset-2">
+                  {settings.email}
                 </a>
               </li>
             </ul>
 
             <div className="mt-9 flex flex-wrap justify-center gap-4">
               <Button
-                href={`mailto:${practicalInfo.email}`}
+                href={`mailto:${settings.email}`}
                 variant="secondary"
                 icon={Send}
                 className="!bg-navy-950/10 !text-navy-950 border-navy-950/20 hover:!bg-navy-950/20"
               >
                 Demande de renseignement
               </Button>
-              <Button href={practicalInfo.helloAssoUrl} icon={ExternalLink} className="!from-navy-950 !to-navy-900 !text-white">
+              <Button href={settings.helloasso_url ?? "#"} icon={ExternalLink} className="!from-navy-950 !to-navy-900 !text-white">
                 M&apos;inscrire
               </Button>
             </div>

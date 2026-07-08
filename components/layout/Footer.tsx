@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { Mail, MapPin } from "lucide-react";
 import { club, navLinks } from "@/lib/data/club";
-import { contactInfo } from "@/lib/data/contact";
+import { getSiteSettings } from "@/lib/supabase/settings";
 import { Container } from "@/components/ui/Container";
 import { FacebookIcon, InstagramIcon } from "@/components/ui/SocialIcons";
 
-export function Footer() {
+export async function Footer() {
+  const settings = await getSiteSettings();
+
   return (
     <footer className="border-t border-white/10 bg-navy-950 text-white/70">
       <Container className="grid gap-10 py-16 sm:grid-cols-2 lg:grid-cols-4">
@@ -14,7 +16,7 @@ export function Footer() {
           <p className="mt-3 max-w-xs text-sm leading-relaxed">{club.tagline}</p>
           <div className="mt-5 flex gap-3">
             <a
-              href={contactInfo.facebookUrl}
+              href={settings.facebook_url ?? undefined}
               target="_blank"
               rel="noreferrer"
               aria-label="Facebook des Mousquetaires"
@@ -23,7 +25,7 @@ export function Footer() {
               <FacebookIcon className="size-4" />
             </a>
             <a
-              href={contactInfo.instagramUrl}
+              href={settings.instagram_url ?? undefined}
               target="_blank"
               rel="noreferrer"
               aria-label="Instagram des Mousquetaires"
@@ -52,13 +54,13 @@ export function Footer() {
           <ul className="space-y-3 text-sm">
             <li className="flex items-start gap-2">
               <Mail className="mt-0.5 size-4 shrink-0 text-gold-400" />
-              <a href={`mailto:${contactInfo.email}`} className="transition-colors hover:text-white">
-                {contactInfo.email}
+              <a href={`mailto:${settings.email}`} className="transition-colors hover:text-white">
+                {settings.email}
               </a>
             </li>
             <li className="flex items-start gap-2">
               <MapPin className="mt-0.5 size-4 shrink-0 text-gold-400" />
-              <span>{contactInfo.address}</span>
+              <span>{settings.address}</span>
             </li>
           </ul>
         </div>

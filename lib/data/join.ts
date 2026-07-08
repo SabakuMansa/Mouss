@@ -20,11 +20,3 @@ export const advantages: Advantage[] = [
     description: "Vivre le foot US, c'est aussi partager des moments forts en dehors du terrain.",
   },
 ];
-
-export const practicalInfo = {
-  venue: "Stade Municipal Jean Longuet",
-  address: "254 av. de la Division Leclerc - 92290 Chatenay-Malabry",
-  schedule: "Lundi & Jeudi de 20h à 22h",
-  email: "mousquetaires.footus@gmail.com",
-  helloAssoUrl: "https://www.helloasso.com/associations/les-mousquetaires-foot-us/adhesions/adhesion-2025-2026",
-};

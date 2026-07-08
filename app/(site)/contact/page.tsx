@@ -5,14 +5,16 @@ import { Container } from "@/components/ui/Container";
 import { Stagger, StaggerItem } from "@/components/ui/RevealOnScroll";
 import { ContactCard } from "@/components/contact/ContactCard";
 import { MapEmbed } from "@/components/contact/MapEmbed";
-import { contactInfo } from "@/lib/data/contact";
+import { getSiteSettings } from "@/lib/supabase/settings";
 
 export const metadata: Metadata = {
   title: "Contact",
   description: "Contactez Les Mousquetaires ou venez nous retrouver au stade Jean Longuet, Châtenay-Malabry.",
 };
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const settings = await getSiteSettings();
+
   return (
     <>
       <PageHero
@@ -26,36 +28,42 @@ export default function ContactPage() {
           <Stagger className="grid gap-6 sm:grid-cols-3">
             <StaggerItem>
               <ContactCard icon={Mail} title="Nos coordonnées">
-                <a href={`mailto:${contactInfo.email}`} className="block hover:text-navy-950">
-                  {contactInfo.email}
+                <a href={`mailto:${settings.email}`} className="block hover:text-navy-950">
+                  {settings.email}
                 </a>
-                <p className="mt-1">{contactInfo.address}</p>
+                <p className="mt-1">{settings.address}</p>
               </ContactCard>
             </StaggerItem>
 
             <StaggerItem>
               <ContactCard icon={Share2} title="Retrouvez-nous">
                 <div className="flex justify-center gap-4">
-                  <a href={contactInfo.facebookUrl} target="_blank" rel="noreferrer" className="hover:text-navy-950">
-                    Facebook
-                  </a>
-                  <a href={contactInfo.instagramUrl} target="_blank" rel="noreferrer" className="hover:text-navy-950">
-                    Instagram
-                  </a>
+                  {settings.facebook_url ? (
+                    <a href={settings.facebook_url} target="_blank" rel="noreferrer" className="hover:text-navy-950">
+                      Facebook
+                    </a>
+                  ) : null}
+                  {settings.instagram_url ? (
+                    <a href={settings.instagram_url} target="_blank" rel="noreferrer" className="hover:text-navy-950">
+                      Instagram
+                    </a>
+                  ) : null}
                 </div>
               </ContactCard>
             </StaggerItem>
 
             <StaggerItem>
               <ContactCard icon={MapPinned} title="Localisation">
-                <p>Stade Jean Longuet, Châtenay-Malabry</p>
+                <p>{settings.venue ?? "Stade Jean Longuet, Châtenay-Malabry"}</p>
               </ContactCard>
             </StaggerItem>
           </Stagger>
 
-          <div className="mt-14">
-            <MapEmbed src={contactInfo.mapEmbedSrc} />
-          </div>
+          {settings.map_embed_src ? (
+            <div className="mt-14">
+              <MapEmbed src={settings.map_embed_src} />
+            </div>
+          ) : null}
         </Container>
       </section>
     </>
