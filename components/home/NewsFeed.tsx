@@ -4,9 +4,11 @@ import { GlassCard } from "@/components/ui/GlassCard";
 import { Stagger, StaggerItem } from "@/components/ui/RevealOnScroll";
 import { Button } from "@/components/ui/Button";
 import { newsWithFormattedDate } from "@/lib/data/news";
+import { getMatches } from "@/lib/supabase/matches";
 
-export function NewsFeed() {
-  const items = newsWithFormattedDate();
+export async function NewsFeed() {
+  const matches = await getMatches();
+  const items = newsWithFormattedDate(matches);
   if (items.length === 0) return null;
 
   return (

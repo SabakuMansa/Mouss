@@ -3,27 +3,29 @@ import { PageHero } from "@/components/ui/PageHero";
 import { Container } from "@/components/ui/Container";
 import { Stagger, StaggerItem } from "@/components/ui/RevealOnScroll";
 import { MatchCard } from "@/components/schedule/MatchCard";
-import { matches } from "@/lib/data/matches";
+import { getMatches } from "@/lib/supabase/matches";
 
 export const metadata: Metadata = {
   title: "Calendrier",
   description: "Tous les matchs de la saison 2025-2026 des Mousquetaires : dates, lieux et résultats.",
 };
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "ItemList",
-  itemListElement: matches.map((match, index) => ({
-    "@type": "SportsEvent",
-    position: index + 1,
-    name: `Les Mousquetaires ${match.isHome ? "vs" : "@"} ${match.opponent}`,
-    startDate: match.dateTimeIso,
-    location: { "@type": "Place", name: match.venue },
-    ...(match.result ? { result: match.result } : {}),
-  })),
-};
+export default async function SchedulePage() {
+  const matches = await getMatches();
 
-export default function SchedulePage() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    itemListElement: matches.map((match, index) => ({
+      "@type": "SportsEvent",
+      position: index + 1,
+      name: `Les Mousquetaires ${match.isHome ? "vs" : "@"} ${match.opponent}`,
+      startDate: match.dateTimeIso,
+      location: { "@type": "Place", name: match.venue },
+      ...(match.result ? { result: match.result } : {}),
+    })),
+  };
+
   return (
     <>
       <script

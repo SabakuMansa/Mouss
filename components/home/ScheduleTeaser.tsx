@@ -2,10 +2,11 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Stagger, StaggerItem } from "@/components/ui/RevealOnScroll";
 import { Button } from "@/components/ui/Button";
 import { MatchCard } from "@/components/schedule/MatchCard";
-import { matches } from "@/lib/data/matches";
+import { getMatches } from "@/lib/supabase/matches";
 import { matchStatus } from "@/lib/utils";
+import type { Match } from "@/lib/types";
 
-function pickTeaserMatches() {
+function pickTeaserMatches(matches: Match[]) {
   const sorted = [...matches].sort(
     (a, b) => new Date(a.dateTimeIso).getTime() - new Date(b.dateTimeIso).getTime()
   );
@@ -14,8 +15,9 @@ function pickTeaserMatches() {
   return sorted.slice(-3).reverse();
 }
 
-export function ScheduleTeaser() {
-  const teaser = pickTeaserMatches();
+export async function ScheduleTeaser() {
+  const matches = await getMatches();
+  const teaser = pickTeaserMatches(matches);
 
   return (
     <section className="bg-navy-950 py-24 sm:py-32">

@@ -4,7 +4,7 @@ import { AnimatedCounter } from "@/components/ui/AnimatedCounter";
 import { Button } from "@/components/ui/Button";
 import { introText } from "@/lib/data/about";
 import { club } from "@/lib/data/club";
-import { matches } from "@/lib/data/matches";
+import { getMatches } from "@/lib/supabase/matches";
 import { honors } from "@/lib/data/honors";
 
 const titleCount = honors.reduce(
@@ -13,7 +13,9 @@ const titleCount = honors.reduce(
 );
 const yearsOfHistory = new Date().getFullYear() - club.foundedYear;
 
-export function ClubIntro() {
+export async function ClubIntro() {
+  const matches = await getMatches();
+
   return (
     <section className="bg-offwhite-50 py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-10">
