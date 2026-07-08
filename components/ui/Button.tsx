@@ -27,7 +27,7 @@ type ButtonProps = BaseProps &
 
 export function Button({ variant = "primary", icon: Icon = ArrowRight, className, children, ...props }: ButtonProps) {
   const classes = cn(
-    "group inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold tracking-wide uppercase transition-all duration-300 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-400",
+    "group inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold tracking-wide uppercase transition-all duration-300 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-400 active:scale-[0.96] active:duration-100",
     VARIANT_STYLES[variant],
     className
   );

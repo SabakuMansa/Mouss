@@ -20,7 +20,7 @@ export async function Footer() {
               target="_blank"
               rel="noreferrer"
               aria-label="Facebook des Mousquetaires"
-              className="flex size-10 items-center justify-center rounded-full bg-white/5 transition-colors hover:bg-gold-400 hover:text-navy-950"
+              className="flex size-10 items-center justify-center rounded-full bg-white/5 transition-all duration-150 ease-out hover:bg-gold-400 hover:text-navy-950 active:scale-90"
             >
               <FacebookIcon className="size-4" />
             </a>
@@ -29,7 +29,7 @@ export async function Footer() {
               target="_blank"
               rel="noreferrer"
               aria-label="Instagram des Mousquetaires"
-              className="flex size-10 items-center justify-center rounded-full bg-white/5 transition-colors hover:bg-gold-400 hover:text-navy-950"
+              className="flex size-10 items-center justify-center rounded-full bg-white/5 transition-all duration-150 ease-out hover:bg-gold-400 hover:text-navy-950 active:scale-90"
             >
               <InstagramIcon className="size-4" />
             </a>
@@ -88,7 +88,7 @@ export async function Footer() {
             </Link>
             <Link
               href="/admin"
-              className="flex items-center gap-1.5 text-white/30 transition-colors hover:text-gold-400"
+              className="flex items-center gap-1.5 text-white/30 transition-all duration-150 ease-out hover:text-gold-400 active:scale-90"
             >
               <Lock className="size-3" />
               Admin

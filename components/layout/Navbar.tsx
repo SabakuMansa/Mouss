@@ -67,7 +67,7 @@ export function Navbar() {
         <button
           type="button"
           onClick={() => setMobileOpen((v) => !v)}
-          className="rounded-full p-2 text-white lg:hidden"
+          className="rounded-full p-2 text-white transition-all duration-150 ease-out hover:bg-white/10 active:scale-90 active:bg-white/15 lg:hidden"
           aria-label={mobileOpen ? "Fermer le menu" : "Ouvrir le menu"}
           aria-expanded={mobileOpen}
         >
