@@ -1,6 +1,11 @@
+"use client";
+
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { type LucideIcon, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+const MotionLink = motion.create(Link);
 
 type ButtonVariant = "primary" | "secondary" | "ghost";
 
@@ -27,7 +32,7 @@ type ButtonProps = BaseProps &
 
 export function Button({ variant = "primary", icon: Icon = ArrowRight, className, children, ...props }: ButtonProps) {
   const classes = cn(
-    "group inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold tracking-wide uppercase transition-all duration-300 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-400 active:scale-[0.96] active:duration-100",
+    "group inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold tracking-wide uppercase transition-all duration-300 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-400",
     VARIANT_STYLES[variant],
     className
   );
@@ -39,18 +44,24 @@ export function Button({ variant = "primary", icon: Icon = ArrowRight, className
     </>
   );
 
+  // whileTap fires on pointerdown, before a same-tab navigation can unmount the
+  // element — CSS :active alone can get cut off too fast to notice on nav links.
   if ("href" in props && props.href) {
     const { href, ...rest } = props;
     return (
-      <Link href={href} className={classes} {...rest}>
+      <MotionLink href={href} className={classes} whileTap={{ scale: 0.94 }} {...(rest as Omit<typeof rest, "onAnimationStart" | "onDrag" | "onDragStart" | "onDragEnd">)}>
         {content}
-      </Link>
+      </MotionLink>
     );
   }
 
   return (
-    <button className={classes} {...(props as React.ButtonHTMLAttributes<HTMLButtonElement>)}>
+    <motion.button
+      className={classes}
+      whileTap={{ scale: 0.94 }}
+      {...(props as Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "onAnimationStart" | "onDrag" | "onDragStart" | "onDragEnd">)}
+    >
       {content}
-    </button>
+    </motion.button>
   );
 }

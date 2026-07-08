@@ -3,6 +3,7 @@ import { Mail, MapPin, Lock } from "lucide-react";
 import { club, navLinks } from "@/lib/data/club";
 import { getSiteSettings } from "@/lib/supabase/settings";
 import { Container } from "@/components/ui/Container";
+import { TapLink } from "@/components/ui/TapLink";
 import { FacebookIcon, InstagramIcon } from "@/components/ui/SocialIcons";
 
 export async function Footer() {
@@ -86,13 +87,13 @@ export async function Footer() {
             <Link href="/mentions-legales" className="hover:text-white/70">
               Mentions légales
             </Link>
-            <Link
+            <TapLink
               href="/admin"
-              className="flex items-center gap-1.5 text-white/30 transition-all duration-150 ease-out hover:text-gold-400 active:scale-90"
+              className="flex items-center gap-1.5 text-white/30 transition-colors hover:text-gold-400"
             >
               <Lock className="size-3" />
               Admin
-            </Link>
+            </TapLink>
           </div>
         </Container>
       </div>
