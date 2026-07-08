@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Anton, Bungee, Manrope } from "next/font/google";
 import { club } from "@/lib/data/club";
+import { EnvironmentBadge } from "@/components/ui/EnvironmentBadge";
 import "./globals.css";
 
 const anton = Anton({
@@ -75,6 +76,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        <EnvironmentBadge />
         {children}
       </body>
     </html>
