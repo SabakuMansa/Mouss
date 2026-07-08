@@ -1,12 +1,5 @@
-/**
- * Verbatim from CONTACT.html. Note: the original site lists a different
- * email here ("...@mail.com") than on NOUS REJOINDRE / mentions légales
- * ("...@gmail.com") — kept exactly as published on each respective page
- * rather than silently "fixing" what might be a typo, since it's a factual
- * detail, not wording.
- */
 export const contactInfo = {
-  email: "mousquetaires.footus@mail.com",
+  email: "mousquetaires.footus@gmail.com",
   address: "Stade Jean Longuet, Châtenay-Malabry",
   facebookUrl: "https://www.facebook.com/mousfootus/?locale=fr_FR",
   instagramUrl: "https://www.instagram.com/mousquetairesfootus/?hl=fr",
