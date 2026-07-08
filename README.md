@@ -62,6 +62,7 @@ supabase/
   storage_setup.sql           → espace de stockage pour les photos uploadées
   seed_*.sql                  → données de départ (transcrites du site d'origine)
   alter_site_settings.sql     → ajout des champs infos pratiques (venue, réseaux sociaux, carte)
+  migrate_products.sql        → table boutique (articles + photo) + reprise des 17 articles existants
 
 scripts/backup.mjs            → export JSON de toutes les tables (utilisé par la sauvegarde automatique)
 .github/workflows/backup.yml  → programme la sauvegarde chaque lundi
@@ -78,6 +79,7 @@ Authentication → Users, jamais par inscription publique — voir Sécurité). 
 | Joueurs & staff | `/admin/joueurs` | Effectif Sénior, U18, coachs |
 | Galerie | `/admin/galerie` | Photos (upload direct ou URL) |
 | Partenaires | `/admin/partenaires` | Sponsors et partenaires |
+| Boutique | `/admin/boutique` | Articles et photos de la boutique |
 | Infos pratiques | `/admin/infos` | Adresse, horaires, réseaux sociaux, carte |
 
 ## Sécurité

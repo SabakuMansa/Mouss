@@ -6,14 +6,17 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Stagger, StaggerItem, RevealOnScroll } from "@/components/ui/RevealOnScroll";
 import { Button } from "@/components/ui/Button";
 import { ProductCard } from "@/components/shop/ProductCard";
-import { shopProducts, HELLOASSO_SHOP_URL } from "@/lib/data/shop";
+import { HELLOASSO_SHOP_URL } from "@/lib/data/shop";
+import { getProducts } from "@/lib/supabase/products";
 
 export const metadata: Metadata = {
   title: "Boutique",
   description: "La boutique officielle des Mousquetaires : maillots, textiles et accessoires, via HelloAsso.",
 };
 
-export default function ShopPage() {
+export default async function ShopPage() {
+  const shopProducts = await getProducts();
+
   return (
     <>
       <PageHero
@@ -40,7 +43,7 @@ export default function ShopPage() {
 
           <Stagger className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {shopProducts.map((product) => (
-              <StaggerItem key={product.name}>
+              <StaggerItem key={product.id}>
                 <ProductCard product={product} href={HELLOASSO_SHOP_URL} />
               </StaggerItem>
             ))}
