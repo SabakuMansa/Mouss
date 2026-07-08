@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Les Mousquetaires — site du club
 
-## Getting Started
+Site du club de football américain Les Mousquetaires (Châtenay-Malabry). Next.js + Supabase.
 
-First, run the development server:
+> Cette documentation est écrite au fur et à mesure de la construction du projet. Certaines sections
+> (déploiement, ajout d'une page, etc.) seront complétées au fil des prochaines étapes.
+
+## Stack technique
+
+- **Next.js 16** (App Router) + **TypeScript** + **React 19**
+- **Tailwind CSS v4** pour le style
+- **Supabase** : base de données (PostgreSQL), authentification admin, stockage de fichiers
+- **Vercel** : hébergement, avec déploiement automatique à chaque `git push`
+
+## Installation sur votre Mac
+
+Prérequis : [Node.js](https://nodejs.org) (version 20 ou plus récente).
+
+```bash
+git clone git@github.com:SabakuMansa/Mouss.git
+cd Mouss
+npm install
+```
+
+Créez ensuite un fichier `.env.local` à la racine du projet (jamais commité dans Git) avec :
+
+```
+NEXT_PUBLIC_SUPABASE_URL=https://pveiltpmlbvaddganotj.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<la clé publique du projet Supabase>
+```
+
+(Ces deux valeurs se trouvent dans Supabase → Project Settings → API Keys.)
+
+## Lancer le site en local
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Puis ouvrez [http://localhost:3000](http://localhost:3000). Le site se recharge automatiquement à chaque modification de code.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Organisation du projet
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+app/
+  (site)/        → toutes les pages publiques (accueil, équipes, calendrier...)
+                    partagent un même menu/pied de page (app/(site)/layout.tsx)
+  admin/          → espace d'administration privé, protégé par connexion
+app/layout.tsx    → structure commune à tout le site (polices, balises SEO)
+proxy.ts          → protège les pages /admin/* : redirige vers la connexion si non identifié
 
-## Learn More
+components/       → composants réutilisables, rangés par thème
+lib/data/         → contenu qui n'est pas encore en base de données (valeurs, textes fixes...)
+lib/supabase/     → connexion à la base de données (client.ts, server.ts) et requêtes (matches.ts...)
+lib/types.ts      → définitions TypeScript des données du site
 
-To learn more about Next.js, take a look at the following resources:
+supabase/schema.sql        → structure complète de la base de données (tables + sécurité)
+supabase/seed_matches.sql  → données de départ (les 8 matchs de la saison)
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Espace admin
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Accessible sur `/admin`, protégé par un compte (créé manuellement dans Supabase → Authentication → Users).
+Actuellement disponible : gestion des matchs et résultats (`/admin/matchs`). D'autres sections
+(actualités, joueurs, galerie, partenaires) seront ajoutées progressivement.
 
-## Deploy on Vercel
+## Environnements
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **`main`** = site en ligne réel (production) : https://mouss-five.vercel.app
+- **`dev`** = branche de test, jamais visible publiquement, avec sa propre URL de preview générée
+  automatiquement par Vercel à chaque `git push`. C'est ici que tout changement est testé avant
+  d'être fusionné vers `main`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+⚠️ Ne jamais utiliser le bouton "Redeploy" sur un déploiement `dev` en cochant une case liée à la
+production — cela pousserait du code non validé sur le site en ligne. Pour republier `dev`, préférez
+un nouveau `git push`.
