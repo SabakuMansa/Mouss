@@ -1,11 +1,14 @@
+import Image from "next/image";
 import { Handshake } from "lucide-react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { RevealOnScroll } from "@/components/ui/RevealOnScroll";
 import { Button } from "@/components/ui/Button";
-import { partners } from "@/lib/data/partners";
+import { getPartners } from "@/lib/supabase/partners";
 import { club } from "@/lib/data/club";
 
-export function PartnersCta() {
+export async function PartnersCta() {
+  const partners = await getPartners();
+
   return (
     <section className="bg-offwhite-50 py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-10">
@@ -13,7 +16,23 @@ export function PartnersCta() {
 
         {partners.length > 0 ? (
           <div className="mt-16 flex flex-wrap items-center justify-center gap-10">
-            {/* Ready to render real logos once partners.ts is populated. */}
+            {partners.map((partner) =>
+              partner.logo_url ? (
+                <a
+                  key={partner.id}
+                  href={partner.website_url ?? undefined}
+                  target={partner.website_url ? "_blank" : undefined}
+                  rel="noreferrer"
+                  className="relative h-16 w-40 grayscale transition-all hover:grayscale-0"
+                >
+                  <Image src={partner.logo_url} alt={partner.name} fill className="object-contain" />
+                </a>
+              ) : (
+                <p key={partner.id} className="font-heading text-lg tracking-wide text-navy-950 uppercase">
+                  {partner.name}
+                </p>
+              )
+            )}
           </div>
         ) : (
           <RevealOnScroll delay={0.1} className="mx-auto mt-14 max-w-2xl rounded-3xl bg-navy-950 p-10 text-center sm:p-14">
