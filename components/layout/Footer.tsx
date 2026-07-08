@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Mail, MapPin } from "lucide-react";
+import { Mail, MapPin, Lock } from "lucide-react";
 import { club, navLinks } from "@/lib/data/club";
 import { getSiteSettings } from "@/lib/supabase/settings";
 import { Container } from "@/components/ui/Container";
@@ -82,9 +82,18 @@ export async function Footer() {
       <div className="border-t border-white/10">
         <Container className="flex flex-col items-center justify-between gap-2 py-6 text-xs text-white/40 sm:flex-row">
           <p>© {new Date().getFullYear()} {club.name}</p>
-          <Link href="/mentions-legales" className="hover:text-white/70">
-            Mentions légales
-          </Link>
+          <div className="flex items-center gap-5">
+            <Link href="/mentions-legales" className="hover:text-white/70">
+              Mentions légales
+            </Link>
+            <Link
+              href="/admin"
+              className="flex items-center gap-1.5 text-white/30 transition-colors hover:text-gold-400"
+            >
+              <Lock className="size-3" />
+              Admin
+            </Link>
+          </div>
         </Container>
       </div>
     </footer>

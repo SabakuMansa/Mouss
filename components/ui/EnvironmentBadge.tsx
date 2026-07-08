@@ -12,7 +12,7 @@ export function EnvironmentBadge() {
 
   return (
     <div
-      className="fixed right-4 bottom-4 z-[200] rounded-full bg-red-600 px-4 py-2 text-xs font-bold tracking-wide text-white uppercase shadow-lg"
+      className="pointer-events-none fixed bottom-4 left-4 z-[200] rounded-full bg-red-600 px-4 py-2 text-xs font-bold tracking-wide text-white uppercase shadow-lg"
       title="Environnement de test — pas le site public"
     >
       ⚠ {label} — pas le site public
