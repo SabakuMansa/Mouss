@@ -1,11 +1,7 @@
-"use client";
-
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { type LucideIcon, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-const MotionLink = motion.create(Link);
+import { TapButton } from "@/components/ui/TapButton";
 
 type ButtonVariant = "primary" | "secondary" | "ghost";
 
@@ -44,24 +40,18 @@ export function Button({ variant = "primary", icon: Icon = ArrowRight, className
     </>
   );
 
-  // whileTap fires on pointerdown, before a same-tab navigation can unmount the
-  // element — CSS :active alone can get cut off too fast to notice on nav links.
   if ("href" in props && props.href) {
-    const { href, ...rest } = props;
+    const { href } = props;
     return (
-      <MotionLink href={href} className={classes} whileTap={{ scale: 0.94 }} {...(rest as Omit<typeof rest, "onAnimationStart" | "onDrag" | "onDragStart" | "onDragEnd">)}>
+      <TapButton href={href} className={classes}>
         {content}
-      </MotionLink>
+      </TapButton>
     );
   }
 
   return (
-    <motion.button
-      className={classes}
-      whileTap={{ scale: 0.94 }}
-      {...(props as Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "onAnimationStart" | "onDrag" | "onDragStart" | "onDragEnd">)}
-    >
+    <TapButton className={classes} {...(props as React.ButtonHTMLAttributes<HTMLButtonElement>)}>
       {content}
-    </motion.button>
+    </TapButton>
   );
 }
