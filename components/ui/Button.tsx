@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { type LucideIcon, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { TapButton } from "@/components/ui/TapButton";
 
 type ButtonVariant = "primary" | "secondary" | "ghost";
 
@@ -27,8 +26,12 @@ type ButtonProps = BaseProps &
   );
 
 export function Button({ variant = "primary", icon: Icon = ArrowRight, className, children, ...props }: ButtonProps) {
+  // Retour au clic : la propriété CSS `scale` (active:scale-95), pas `transform`
+  // — Tailwind v4 neutralise `transform` sur ces éléments, mais honore `scale`.
+  // Le `scale` n'est volontairement pas dans la liste de transition : l'effet
+  // est donc instantané à l'appui (feedback net), le reste reste fluide (300ms).
   const classes = cn(
-    "group inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold tracking-wide uppercase transition-all duration-300 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-400",
+    "group inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold tracking-wide uppercase transition-[color,background-color,border-color,box-shadow,translate] duration-300 ease-out active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-400",
     VARIANT_STYLES[variant],
     className
   );
@@ -41,17 +44,17 @@ export function Button({ variant = "primary", icon: Icon = ArrowRight, className
   );
 
   if ("href" in props && props.href) {
-    const { href } = props;
+    const { href, ...rest } = props;
     return (
-      <TapButton href={href} className={classes}>
+      <Link href={href} className={classes} {...rest}>
         {content}
-      </TapButton>
+      </Link>
     );
   }
 
   return (
-    <TapButton className={classes} {...(props as React.ButtonHTMLAttributes<HTMLButtonElement>)}>
+    <button className={classes} {...(props as React.ButtonHTMLAttributes<HTMLButtonElement>)}>
       {content}
-    </TapButton>
+    </button>
   );
 }

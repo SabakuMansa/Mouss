@@ -64,16 +64,15 @@ export function Navbar() {
           </Button>
         </div>
 
-        <motion.button
+        <button
           type="button"
           onClick={() => setMobileOpen((v) => !v)}
-          whileTap={{ scale: 0.85 }}
-          className="rounded-full p-2 text-white transition-colors hover:bg-white/10 lg:hidden"
+          className="rounded-full p-2 text-white transition-colors hover:bg-white/10 active:scale-90 lg:hidden"
           aria-label={mobileOpen ? "Fermer le menu" : "Ouvrir le menu"}
           aria-expanded={mobileOpen}
         >
           {mobileOpen ? <X className="size-6" /> : <Menu className="size-6" />}
-        </motion.button>
+        </button>
       </div>
 
       <AnimatePresence>
