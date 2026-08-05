@@ -17,6 +17,7 @@ export async function updateSettings(id: string, formData: FormData) {
       facebook_url: String(formData.get("facebook_url") || "") || null,
       instagram_url: String(formData.get("instagram_url") || "") || null,
       map_embed_src: String(formData.get("map_embed_src") || "") || null,
+      twitch_channel: String(formData.get("twitch_channel") || "") || null,
     })
     .eq("id", id);
 

@@ -18,6 +18,7 @@ export const navLinks = [
   { label: "À propos", href: "/a-propos" },
   { label: "Équipe", href: "/equipes" },
   { label: "Calendrier", href: "/calendrier" },
+  { label: "Live", href: "/live" },
   { label: "Galerie", href: "/galerie" },
   { label: "Nous rejoindre", href: "/nous-rejoindre" },
   { label: "Boutique", href: "/boutique" },

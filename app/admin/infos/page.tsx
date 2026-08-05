@@ -48,6 +48,15 @@ export default async function AdminSettingsPage() {
             Carte Google Maps (URL d&apos;intégration)
             <input name="map_embed_src" defaultValue={settings.map_embed_src ?? ""} className="mt-1 w-full rounded-lg border border-navy-950/15 px-3 py-2 text-sm" />
           </label>
+          <label className="text-sm font-medium text-navy-900">
+            Chaîne Twitch (identifiant, sans URL)
+            <input
+              name="twitch_channel"
+              placeholder="mousquetaires92"
+              defaultValue={settings.twitch_channel ?? ""}
+              className="mt-1 w-full rounded-lg border border-navy-950/15 px-3 py-2 text-sm"
+            />
+          </label>
           <div className="sm:col-span-2">
             <button type="submit" className="mt-2 rounded-full bg-gradient-to-r from-gold-400 to-gold-500 px-6 py-2 text-sm font-semibold tracking-wide text-navy-950 uppercase">
               Enregistrer
