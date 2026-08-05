@@ -8,6 +8,11 @@ create table admin_emails (
   email text primary key
 );
 
+-- Cette table n'est lue que par is_admin() ci-dessous (security definer) —
+-- jamais interrogée directement par le site — donc RLS activé sans aucune
+-- règle : fermée à toute requête externe, y compris depuis un compte admin.
+alter table admin_emails enable row level security;
+
 -- Ajoutez ici l'email de chaque personne autorisée à administrer le site.
 -- Remplacez par votre vrai email de connexion admin.
 insert into admin_emails (email) values ('k.benalioua.sio@gmail.com');

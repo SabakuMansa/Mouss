@@ -95,6 +95,11 @@ Authentication → Users, jamais par inscription publique — voir Sécurité). 
   du site avait un bug.
 - **Aucun secret dans Git** : `.env.local` est exclu par `.gitignore`. Les seules valeurs utilisées
   par le site (`NEXT_PUBLIC_SUPABASE_URL`/`ANON_KEY`) sont publiques par conception.
+- **Alertes Supabase** : Supabase envoie un email si une table est créée sans sécurité (RLS)
+  activée — ne jamais ignorer cet email. Réflexe en cas d'alerte : `alter table <nom> enable row
+  level security;` dans le SQL Editor, puis ajouter les règles de lecture/écriture nécessaires
+  (voir `schema.sql` comme modèle). Un oubli de ce type sur `admin_emails` a été corrigé le
+  2026-08-03 (`supabase/fix_admin_emails_rls.sql`).
 
 ## Sauvegardes
 
