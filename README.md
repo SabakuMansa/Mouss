@@ -80,7 +80,7 @@ Authentication → Users, jamais par inscription publique — voir Sécurité). 
 | Galerie | `/admin/galerie` | Photos (upload direct ou URL) |
 | Partenaires | `/admin/partenaires` | Sponsors et partenaires |
 | Boutique | `/admin/boutique` | Articles et photos de la boutique |
-| Infos pratiques | `/admin/infos` | Adresse, horaires, réseaux sociaux, carte |
+| Infos pratiques | `/admin/infos` | Adresse, horaires, réseaux sociaux, carte, chaîne Twitch |
 
 ## Sécurité
 
