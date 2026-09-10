@@ -1,17 +1,45 @@
 # Les Mousquetaires — site du club
 
-Site du club de football américain Les Mousquetaires (Châtenay-Malabry). Next.js + Supabase.
+Site officiel du club de football américain **Les Mousquetaires** (Châtenay-Malabry).
 
-## Stack technique
+| | |
+|---|---|
+| **Site en ligne** | https://mousquetairesfootus.fr |
+| **Espace de gestion** | https://mousquetairesfootus.fr/admin |
+| **Guide non technique** | [`GUIDE-CLUB.md`](GUIDE-CLUB.md) — pour les membres du bureau qui gèrent le contenu |
 
-- **Next.js 16** (App Router) + **TypeScript** + **React 19**
-- **Tailwind CSS v4** pour le style
-- **Supabase** : base de données (PostgreSQL), authentification admin, stockage de fichiers
-- **Vercel** : hébergement, avec déploiement automatique à chaque `git push`
+---
 
-## Installation sur votre Mac
+## Vue d'ensemble
 
-Prérequis : [Node.js](https://nodejs.org) (version 20 ou plus récente).
+Quatre services séparés font tourner le site. Aucun n'est payant dans l'usage actuel.
+
+```mermaid
+flowchart LR
+    V["Visiteur"] --> DOM["mousquetairesfootus.fr<br/>domaine chez OVH"]
+    DOM --> VER["Vercel<br/>affiche le site"]
+    VER --> SUP[("Supabase<br/>contenu + comptes")]
+
+    BUR["Membre du bureau"] --> ADM["Page /admin"]
+    ADM --> SUP
+
+    DEV["Développeur"] --> GH["GitHub<br/>code source"]
+    GH -->|"git push"| VER
+
+    classDef service fill:#161F38,stroke:#F2B705,stroke-width:2px,color:#fff
+    classDef people fill:#F2B705,stroke:#161F38,stroke-width:2px,color:#161F38
+    class DOM,VER,SUP,GH service
+    class V,BUR,DEV people
+```
+
+**À retenir :** le contenu (résultats, photos, boutique…) ne vit pas dans le code. Il est dans la
+base de données et se modifie depuis `/admin`, **sans toucher au code ni redéployer quoi que ce soit**.
+
+---
+
+## Démarrage rapide
+
+Prérequis : [Node.js](https://nodejs.org) version 20 ou plus récente.
 
 ```bash
 git clone git@github.com:SabakuMansa/Mouss.git
@@ -19,165 +47,379 @@ cd Mouss
 npm install
 ```
 
-Créez ensuite un fichier `.env.local` à la racine du projet (jamais commité dans Git) avec :
+Créez ensuite un fichier `.env.local` à la racine (il n'est **jamais** dans Git) :
 
-```
+```bash
 NEXT_PUBLIC_SUPABASE_URL=https://pveiltpmlbvaddganotj.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<la clé publique du projet Supabase>
 ```
 
-(Ces deux valeurs se trouvent dans Supabase → Project Settings → API Keys. Ce sont des valeurs
-publiques par conception, sans risque à réutiliser — la vraie sécurité est assurée côté base de
-données, voir la section Sécurité plus bas.)
+> Ces deux valeurs se trouvent dans **Supabase → Project Settings → API Keys**. Elles sont
+> **publiques par conception** — n'importe quel visiteur peut déjà les lire dans son navigateur.
+> La vraie sécurité est appliquée par la base de données (voir [Sécurité](#sécurité)).
 
-## Lancer le site en local
+Puis lancez le site :
 
 ```bash
-npm run dev
+npm run dev     # http://localhost:3000
 ```
 
-Puis ouvrez [http://localhost:3000](http://localhost:3000). Le site se recharge automatiquement à chaque modification de code. Un bandeau rouge en bas à droite confirme que vous êtes bien en local, jamais sur le vrai site.
+Un bandeau rouge en bas à gauche confirme que vous êtes en local, jamais sur le vrai site.
+
+---
 
 ## Organisation du projet
 
 ```
 app/
-  (site)/        → toutes les pages publiques (accueil, équipes, calendrier...)
-                    partagent un même menu/pied de page (app/(site)/layout.tsx)
-  admin/          → espace d'administration privé, protégé par connexion
-    <section>/page.tsx    → page de liste + formulaire d'ajout
-    <section>/actions.ts  → fonctions serveur (create/update/delete) appelées par les formulaires
-app/layout.tsx    → structure commune à tout le site (polices, balises SEO, bandeau d'environnement)
-proxy.ts          → protège les pages /admin/* : redirige vers la connexion si non identifié
+  (site)/             → pages publiques, partagent menu + pied de page
+    layout.tsx        → le menu et le pied de page communs
+    page.tsx          → accueil
+    calendrier/       → une page = un dossier, le nom du dossier fait l'URL
+    live/             → page Twitch
+    ...
+  admin/              → espace privé, protégé par connexion
+    <section>/page.tsx     → formulaire + liste
+    <section>/actions.ts   → create / update / delete (code serveur)
+  layout.tsx          → structure commune (polices, SEO, bandeau d'environnement)
 
-components/       → composants réutilisables, rangés par thème (home/, teams/, admin/, ui/...)
-lib/data/         → contenu qui reste écrit en dur dans le code (valeurs du club, textes fixes...)
-lib/supabase/     → connexion à la base (client.ts, server.ts) et lecture des données (matches.ts,
-                    roster.ts, photos.ts, partners.ts, settings.ts)
-lib/types.ts      → définitions TypeScript des données du site
+proxy.ts              → bloque /admin/* si non connecté (renvoie vers la connexion)
 
-supabase/
-  schema.sql                  → structure complète de la base (tables + sécurité RLS)
-  harden_admin_access.sql     → liste blanche des emails admin (admin_emails + fonction is_admin())
-  storage_setup.sql           → espace de stockage pour les photos uploadées
-  seed_*.sql                  → données de départ (transcrites du site d'origine)
-  alter_site_settings.sql     → ajout des champs infos pratiques (venue, réseaux sociaux, carte)
-  migrate_products.sql        → table boutique (articles + photo) + reprise des 17 articles existants
+components/           → composants réutilisables, rangés par thème
+  home/  teams/  shop/  admin/  live/  ui/  layout/
 
-scripts/backup.mjs            → export JSON de toutes les tables (utilisé par la sauvegarde automatique)
-.github/workflows/backup.yml  → programme la sauvegarde chaque lundi
+lib/
+  supabase/           → connexion à la base + lecture des données
+    client.ts         → côté navigateur     server.ts → côté serveur
+    matches.ts  roster.ts  photos.ts  partners.ts  products.ts  settings.ts
+  data/               → contenu volontairement figé dans le code
+                        (identité du club, mentions légales, valeurs, palmarès)
+  types.ts            → définitions TypeScript
+  utils.ts            → dates, statut de match…
+
+supabase/             → scripts SQL, à exécuter dans Supabase → SQL Editor
+scripts/backup.mjs    → export JSON de toutes les tables
+.github/workflows/    → sauvegarde automatique du lundi
 ```
 
-## Espace admin
+### Pourquoi certains contenus sont dans `lib/data/` et pas dans la base
 
-Accessible sur `/admin`, protégé par connexion (compte créé manuellement dans Supabase →
-Authentication → Users, jamais par inscription publique — voir Sécurité). Sections disponibles :
+C'est volontaire. Y restent les contenus qui **ne changent quasiment jamais** ou dont une faute de
+frappe aurait des conséquences : identité du club, mentions légales (`club.ts`), valeurs, frise
+historique, palmarès. Git en garde l'historique, ils ne sont pas modifiables par erreur depuis
+l'admin.
 
-| Section | URL | Gère |
+---
+
+## D'où vient chaque contenu du site
+
+```mermaid
+flowchart LR
+    subgraph ADMIN["Espace /admin"]
+        A1["Matchs"]
+        A2["Joueurs"]
+        A3["Galerie"]
+        A4["Partenaires"]
+        A5["Boutique"]
+        A6["Infos pratiques"]
+    end
+
+    subgraph BASE["Base Supabase"]
+        T1[("matches")]
+        T2[("players + teams")]
+        T3[("photos")]
+        T4[("partners")]
+        T5[("products")]
+        T6[("site_settings")]
+    end
+
+    subgraph PAGES["Pages publiques"]
+        P1["Calendrier + Actualités"]
+        P2["Équipe"]
+        P3["Galerie"]
+        P4["Accueil"]
+        P5["Boutique"]
+        P6["Contact, Live, pied de page"]
+    end
+
+    A1 --> T1 --> P1
+    A2 --> T2 --> P2
+    A3 --> T3 --> P3
+    A4 --> T4 --> P4
+    A5 --> T5 --> P5
+    A6 --> T6 --> P6
+```
+
+Les **actualités** de la page d'accueil ne se saisissent pas : ce sont les 3 derniers matchs joués,
+reformulés automatiquement (`lib/data/news.ts`).
+
+| Section admin | URL | Gère |
 |---|---|---|
 | Matchs & résultats | `/admin/matchs` | Calendrier de la saison |
-| Joueurs & staff | `/admin/joueurs` | Effectif Sénior, U18, coachs |
-| Galerie | `/admin/galerie` | Photos (upload direct ou URL) |
-| Partenaires | `/admin/partenaires` | Sponsors et partenaires |
-| Boutique | `/admin/boutique` | Articles et photos de la boutique |
-| Infos pratiques | `/admin/infos` | Adresse, horaires, réseaux sociaux, carte, chaîne Twitch |
+| Joueurs & staff | `/admin/joueurs` | Effectif Séniors, U18, coachs |
+| Galerie | `/admin/galerie` | Photos |
+| Partenaires | `/admin/partenaires` | Sponsors |
+| Boutique | `/admin/boutique` | Articles et photos |
+| Infos pratiques | `/admin/infos` | Adresse, horaires, réseaux, carte, chaîne Twitch |
+
+---
+
+## Branches et environnements
+
+```mermaid
+flowchart TD
+    LOCAL["Votre ordinateur<br/>npm run dev"] -->|"git push"| DEV["Branche dev<br/>site de test"]
+    DEV -->|"git merge dev"| MAIN["Branche main<br/>site en ligne"]
+    DEV -.->|"automatique"| PREV["URL de preview Vercel<br/>bandeau rouge TEST"]
+    MAIN -.->|"automatique"| PROD["mousquetairesfootus.fr<br/>vu par le public"]
+    BAK["Branche backups<br/>aucun code, que des sauvegardes JSON"]
+
+    classDef safe fill:#E9F4EC,stroke:#2C5C3C,color:#14351F
+    classDef live fill:#FCEEEE,stroke:#8A2B2B,color:#5A1C1C
+    classDef neutral fill:#EDF1F8,stroke:#5A6478,color:#121A2C
+    class LOCAL,DEV,PREV safe
+    class MAIN,PROD live
+    class BAK neutral
+```
+
+- **`dev`** — branche de travail. Chaque `git push` génère une URL de preview Vercel avec un
+  bandeau rouge « Test ». Rien de ce qui s'y trouve n'est visible du public.
+- **`main`** — le vrai site. Tout ce qui arrive ici part **immédiatement en ligne**.
+- **`backups`** — ne contient aucun code, seulement l'historique des sauvegardes. Vercel tente de la
+  déployer et échoue : c'est normal et sans conséquence.
+
+> ⚠️ **Ne jamais utiliser le bouton « Redeploy »** sur un déploiement `dev` en cochant une option liée
+> à la production : cela mettrait en ligne du code non validé. Pour republier `dev`, faites un
+> nouveau `git push`.
+
+---
+
+## Faire une mise à jour
+
+```mermaid
+flowchart LR
+    S1["1. git checkout dev<br/>git pull"] --> S2["2. Modifier<br/>le code"]
+    S2 --> S3["3. npm run dev<br/>vérifier en local"]
+    S3 --> S4["4. commit + push<br/>sur dev"]
+    S4 --> S5["5. Vérifier sur<br/>la preview Vercel"]
+    S5 -->|"OK"| S6["6. merge vers main<br/>= mise en ligne"]
+    S5 -->|"Problème"| S2
+
+    classDef step fill:#161F38,stroke:#F2B705,stroke-width:2px,color:#fff
+    classDef final fill:#F2B705,stroke:#161F38,stroke-width:2px,color:#161F38
+    class S1,S2,S3,S4,S5 step
+    class S6 final
+```
+
+```bash
+# 1 à 4
+git checkout dev && git pull
+# ... vos modifications ...
+npm run dev                        # vérifier sur http://localhost:3000
+git add -A
+git commit -m "Description du changement"
+git push origin dev
+
+# 6 — seulement une fois la preview validée
+git checkout main
+git pull
+git merge dev
+git push origin main               # Vercel met le vrai site à jour tout seul
+```
+
+---
+
+## Ajouter une nouvelle page publique
+
+1. Créez un dossier dans `app/(site)/` portant le nom de l'URL voulue
+   (`app/(site)/evenements/` → `/evenements`)
+2. Dedans, un fichier `page.tsx` — partez d'une page existante similaire, par exemple
+   [`app/(site)/galerie/page.tsx`](app/\(site\)/galerie/page.tsx)
+3. Ajoutez l'entrée de menu dans `lib/data/club.ts`, tableau `navLinks`
+
+---
+
+## Ajouter une section à l'espace admin
+
+Les 6 sections existantes suivent **exactement le même schéma**. En comprendre une, c'est les
+comprendre toutes. `partenaires` est la plus simple à copier.
+
+```mermaid
+flowchart TD
+    E1["1. supabase/&lt;nom&gt;.sql<br/>créer la table + RLS"]
+    E2["2. lib/supabase/&lt;nom&gt;.ts<br/>fonction de lecture get...()"]
+    E3["3. app/admin/&lt;nom&gt;/actions.ts<br/>create / update / delete"]
+    E4["4. app/admin/&lt;nom&gt;/page.tsx<br/>formulaire + liste"]
+    E5["5. Ajouter le lien<br/>admin/layout.tsx + admin/page.tsx"]
+    E6["6. Afficher côté public<br/>appeler get...() dans la page"]
+
+    E1 --> E2 --> E3 --> E4 --> E5 --> E6
+
+    classDef sql fill:#EDF1F8,stroke:#5A6478,color:#121A2C
+    classDef code fill:#161F38,stroke:#F2B705,stroke-width:2px,color:#fff
+    class E1 sql
+    class E2,E3,E4,E5,E6 code
+```
+
+Fichiers à prendre comme modèles :
+[`supabase/migrate_products.sql`](supabase/migrate_products.sql) ·
+[`lib/supabase/partners.ts`](lib/supabase/partners.ts) ·
+[`app/admin/partenaires/actions.ts`](app/admin/partenaires/actions.ts)
+
+---
 
 ## Sécurité
 
-- **Aucune inscription publique** : seuls les comptes créés à la main par un admin (Supabase →
-  Authentication → Users) peuvent exister.
-- **Liste blanche d'admins** (`supabase/harden_admin_access.sql`) : même un compte connecté ne peut
-  écrire dans la base que si son email figure dans la table `admin_emails`. Pour ajouter un nouvel
-  admin (ex: un autre membre du bureau), deux étapes : créer son compte dans Supabase Authentication,
-  puis `insert into admin_emails (email) values ('son-email@exemple.com');` dans le SQL Editor.
-- **Lecture publique / écriture admin uniquement**, appliqué au niveau de la base de données
-  elle-même (Row Level Security), pas seulement dans le code du site — donc protégé même si le code
-  du site avait un bug.
-- **Aucun secret dans Git** : `.env.local` est exclu par `.gitignore`. Les seules valeurs utilisées
-  par le site (`NEXT_PUBLIC_SUPABASE_URL`/`ANON_KEY`) sont publiques par conception.
-- **Alertes Supabase** : Supabase envoie un email si une table est créée sans sécurité (RLS)
-  activée — ne jamais ignorer cet email. Réflexe en cas d'alerte : `alter table <nom> enable row
-  level security;` dans le SQL Editor, puis ajouter les règles de lecture/écriture nécessaires
-  (voir `schema.sql` comme modèle). Un oubli de ce type sur `admin_emails` a été corrigé le
-  2026-08-03 (`supabase/fix_admin_emails_rls.sql`).
+```mermaid
+flowchart TD
+    REQ["Une requête arrive"] --> Q1{"Lecture ou écriture ?"}
+    Q1 -->|"Lecture"| OK1["Autorisée<br/>le site est public"]
+    Q1 -->|"Écriture"| Q2{"Compte connecté ?"}
+    Q2 -->|"Non"| NO1["Refusée"]
+    Q2 -->|"Oui"| Q3{"Email dans<br/>admin_emails ?"}
+    Q3 -->|"Non"| NO2["Refusée"]
+    Q3 -->|"Oui"| OK2["Autorisée"]
+
+    classDef yes fill:#E9F4EC,stroke:#2C5C3C,color:#14351F
+    classDef no fill:#FCEEEE,stroke:#8A2B2B,color:#5A1C1C
+    class OK1,OK2 yes
+    class NO1,NO2 no
+```
+
+Ces règles sont appliquées **par la base de données elle-même** (Row Level Security), pas par le
+code du site. Même un bug dans le code ne peut pas les contourner.
+
+- **Aucune inscription publique.** Les comptes sont créés à la main dans
+  Supabase → Authentication → Users.
+- **Liste blanche d'admins.** Un compte connecté ne peut écrire que si son email figure dans la
+  table `admin_emails`. Voir [`supabase/harden_admin_access.sql`](supabase/harden_admin_access.sql).
+- **Aucun secret dans Git.** `.env.local` est exclu par `.gitignore`.
+
+### Ajouter un administrateur
+
+Deux étapes, les deux obligatoires :
+
+1. **Supabase → Authentication → Users → Add user**, en cochant **Auto Confirm User**
+2. **SQL Editor** :
+   ```sql
+   insert into admin_emails (email) values ('son-email@exemple.com');
+   ```
+
+Sans la seconde, la personne peut se connecter mais ne peut rien modifier.
+
+### Alertes de sécurité
+
+Supabase envoie un email si une table est créée **sans RLS activé**. **Ne jamais ignorer ces
+emails** — ils sont fiables. Réflexe :
+
+```sql
+alter table <nom_de_la_table> enable row level security;
+-- puis les règles de lecture/écriture, voir schema.sql comme modèle
+```
+
+Un oubli de ce type sur `admin_emails` a été détecté et corrigé le 2026-08-03
+([`supabase/fix_admin_emails_rls.sql`](supabase/fix_admin_emails_rls.sql)).
+
+---
 
 ## Sauvegardes
 
-Une [GitHub Action](.github/workflows/backup.yml) exporte automatiquement toutes les tables en JSON
-chaque lundi à 3h, et les enregistre sur la branche **`backups`** du dépôt (dossier `backups/<date>/`).
-Gratuit, sans intervention nécessaire. Pour lancer une sauvegarde manuelle immédiate : GitHub → onglet
-**Actions** → "Sauvegarde hebdomadaire de la base de données" → **Run workflow**.
+Une [GitHub Action](.github/workflows/backup.yml) exporte toutes les tables en JSON **chaque lundi
+à 3h** sur la branche `backups`, dossier `backups/<date>/`. Gratuit, aucune intervention nécessaire.
 
-Pour restaurer une table à partir d'une sauvegarde : ouvrez le fichier JSON correspondant sur la
-branche `backups`, et réinjectez les lignes via Supabase → Table Editor (ou SQL Editor avec des
-`insert into`).
+- **Sauvegarde manuelle immédiate :** GitHub → onglet **Actions** → « Sauvegarde hebdomadaire de la
+  base de données » → **Run workflow**
+- **Restaurer :** ouvrez le fichier JSON sur la branche `backups`, réinjectez les lignes via
+  Supabase → Table Editor ou SQL Editor
 
-## Environnements
+---
 
-- **`main`** = site en ligne réel (production) : https://mouss-five.vercel.app
-- **`dev`** = branche de test, jamais visible publiquement, avec sa propre URL de preview générée
-  automatiquement par Vercel à chaque `git push`. Un bandeau rouge "Test (dev)" s'affiche pour ne
-  jamais confondre avec le vrai site.
-- **`backups`** = ne contient aucun code, juste l'historique des sauvegardes. Vercel essaiera de la
-  déployer automatiquement et échouera (normal, sans conséquence) puisqu'il n'y a pas de site dessus.
+## Revenir en arrière
 
-⚠️ Ne jamais utiliser le bouton "Redeploy" sur un déploiement `dev` en cochant une case liée à la
-production — cela pousserait du code non validé sur le site en ligne. Pour republier `dev`, préférez
-un nouveau `git push`.
+**Le plus simple — sans toucher au code.** Vercel garde tous les déploiements précédents :
+vercel.com → **Deployments** → un déploiement `main` qui fonctionnait → **« … »** →
+**Promote to Production**. Retour instantané.
 
-## Comment faire une mise à jour du site
-
-1. Toujours partir de la branche `dev` : `git checkout dev && git pull`
-2. Faites vos modifications de code
-3. Vérifiez en local : `npm run dev`, puis regardez sur [http://localhost:3000](http://localhost:3000)
-4. `git add -A && git commit -m "Description du changement" && git push origin dev`
-5. Vercel republie automatiquement une preview de `dev` (URL différente à chaque fois, visible dans
-   l'onglet Deployments) — vérifiez que tout fonctionne dessus
-6. Une fois satisfait, fusionnez vers `main` pour mettre en ligne :
-   ```bash
-   git checkout main
-   git pull
-   git merge dev
-   git push origin main
-   ```
-   Vercel republie alors automatiquement le vrai site en production.
-
-## Comment ajouter une nouvelle page publique
-
-1. Créez un dossier dans `app/(site)/` avec le nom de l'URL voulue (ex: `app/(site)/evenements/`
-   pour `/evenements`)
-2. À l'intérieur, un fichier `page.tsx` — copiez la structure d'une page existante similaire
-   (ex: `app/(site)/galerie/page.tsx`) comme point de départ
-3. Ajoutez le lien dans le menu : `lib/data/club.ts`, tableau `navLinks`
-
-## Comment ajouter une nouvelle section à l'espace admin
-
-Chaque section admin suit le même schéma (voir `/admin/partenaires` comme exemple simple) :
-
-1. `supabase/` : ajoutez une table si besoin (avec RLS + policies, voir `schema.sql` comme modèle)
-2. `lib/supabase/<nom>.ts` : une fonction qui lit la table (`get...()`)
-3. `app/admin/<nom>/actions.ts` : fonctions serveur `create/update/delete` (voir
-   `app/admin/partenaires/actions.ts`)
-4. `app/admin/<nom>/page.tsx` : la page avec le formulaire et la liste
-5. Ajoutez le lien dans `app/admin/layout.tsx` (menu) et `app/admin/page.tsx` (tableau de bord)
-6. Si la page publique doit aussi afficher ces données, remplacez son import statique par un appel
-   à votre nouvelle fonction `get...()` (voir comment `app/(site)/galerie/page.tsx` utilise
-   `getPhotos()`)
-
-## Comment revenir en arrière si quelque chose casse
-
-**Option la plus simple (recommandée)** : Vercel garde tous les déploiements précédents. Sur
-vercel.com → Deployments, retrouvez un déploiement `main` antérieur qui fonctionnait, cliquez sur
-**"..."** → **"Promote to Production"**. Le site revient instantanément à cette version, sans toucher
-au code.
-
-**Avec Git** (si vous voulez aussi annuler le changement dans le code) :
+**Avec Git**, pour annuler aussi le changement dans le code :
 
 ```bash
-git log --oneline          # repérez le commit à annuler (son identifiant à gauche)
-git revert <identifiant>   # crée un nouveau commit qui annule celui-ci proprement
-git push origin main       # (ou dev, selon la branche concernée)
+git log --oneline          # repérer l'identifiant du commit fautif
+git revert <identifiant>   # crée un commit qui annule proprement le précédent
+git push origin main
 ```
 
-Évitez `git reset --hard` ou toute commande qui réécrit l'historique sur une branche déjà partagée —
-`git revert` est plus sûr, il ajoute une correction sans effacer l'historique existant.
+> Évitez `git reset --hard` sur une branche partagée : `git revert` est plus sûr, il corrige sans
+> réécrire l'historique.
+
+---
+
+## Pièges connus
+
+Les points qui ont réellement fait perdre du temps sur ce projet. À lire avant de chercher longtemps.
+
+### `transform` ne s'affiche pas — utilisez `scale`
+
+Sur les boutons et liens de ce projet, la propriété CSS `transform` **n'a aucun effet visible**
+(elle est calculée à `none`), alors que la propriété indépendante `scale` fonctionne normalement.
+
+Conséquence : toute animation d'appui ou de survol basée sur `transform` — y compris le `whileTap`
+de Framer Motion — reste **invisible sans provoquer la moindre erreur**. Utilisez les utilitaires
+Tailwind `active:scale-*` / `hover:scale-*`, qui compilent bien vers `scale`.
+
+### `transition-all` écrase l'effet d'appui
+
+`transition-all` lisse aussi le `scale` sur 300 ms, ce qui rend le retour au clic imperceptible.
+Listez explicitement les propriétés animées en excluant `scale`, comme dans
+[`components/ui/Button.tsx`](components/ui/Button.tsx).
+
+### Un composant serveur ne peut pas recevoir d'icône dans un composant client
+
+Passer une icône `lucide-react` en prop (`icon={ExternalLink}`) depuis une page serveur vers un
+composant marqué `"use client"` provoque une **erreur serveur en production** :
+*« Functions cannot be passed directly to Client Components »*. `Button` doit donc rester un
+composant serveur. Isolez l'interactivité dans un composant enfant qui reçoit du contenu **déjà
+rendu**, jamais une référence de composant.
+
+### Les builds utilisent `--webpack`
+
+```bash
+npm run build -- --webpack
+```
+
+Héritage d'une incompatibilité entre Turbopack et un lien symbolique `node_modules` de l'ancienne
+installation. Le projet ayant depuis changé d'emplacement, **cette contrainte n'a jamais été
+revérifiée** — le build par défaut fonctionne peut-être très bien aujourd'hui.
+
+### Les photos de la boutique pointent vers HelloAsso
+
+Les images des 17 articles sont **hébergées chez HelloAsso**
+(`cdn.helloasso.com`, autorisé dans `next.config.ts`). Leur page boutique bloque les robots (403),
+mais leur serveur d'images, lui, est accessible. Si HelloAsso change ces adresses, les photos
+disparaîtront : il faudra alors les ré-héberger via `/admin/boutique`.
+
+### La base de données est unique
+
+Il n'y a **qu'une seule base Supabase**, partagée par `dev` et `main`. Un script SQL exécuté depuis
+l'environnement de test affecte donc **aussi le site en ligne**. Il n'y a pas de base de test séparée.
+
+---
+
+## Qualité du code
+
+```bash
+npm run lint                 # ESLint
+npx tsc --noEmit             # vérification TypeScript seule
+npm run build -- --webpack   # build complet (inclut les deux)
+```
+
+TypeScript est en mode `strict`. Il n'y a **aucun test automatisé** : toute modification doit être
+vérifiée visuellement en local puis sur la preview `dev`.
+
+---
+
+## Documents liés
+
+| Fichier | Pour qui |
+|---|---|
+| `README.md` | Développeurs — ce document |
+| [`GUIDE-CLUB.md`](GUIDE-CLUB.md) | Membres du bureau — utilisation quotidienne de `/admin` |
