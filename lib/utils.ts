@@ -26,7 +26,7 @@ export function formatMatchTime(iso: string) {
   return TIME_FORMATTER.format(date);
 }
 
-/** Status is derived from the real match date vs. now — never hardcoded. */
+/** Le statut se déduit de la date réelle du match comparée à maintenant — jamais écrit en dur. */
 export function matchStatus(iso: string): "upcoming" | "past" {
   return new Date(iso).getTime() > Date.now() ? "upcoming" : "past";
 }

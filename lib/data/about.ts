@@ -1,4 +1,4 @@
-/** Verbatim from A PROPOS MOUS.html — "Qui sommes-nous ?", split into timeline beats. */
+/** Repris mot pour mot de l'ancien site (« Qui sommes-nous ? »), découpé en étapes de frise. */
 export const historyTimeline = [
   {
     year: "1982",

@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-/** Cinematic real-photo banner with a slow Ken Burns zoom — adds motion without illustration. */
+/** Bandeau photo avec un lent zoom (effet Ken Burns) — du mouvement à partir de vraies images. */
 export function ActionPhotoStrip() {
   return (
     <div className="relative h-56 overflow-hidden bg-navy-950 sm:h-72">

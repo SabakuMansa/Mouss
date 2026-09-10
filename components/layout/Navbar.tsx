@@ -21,9 +21,14 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  useEffect(() => {
+  // Referme le menu mobile à chaque changement de page. Ajustement pendant le
+  // rendu plutôt que dans un effet : React réagit immédiatement, sans provoquer
+  // un second rendu où le menu resterait brièvement ouvert.
+  const [pathAtRender, setPathAtRender] = useState(pathname);
+  if (pathAtRender !== pathname) {
+    setPathAtRender(pathname);
     setMobileOpen(false);
-  }, [pathname]);
+  }
 
   return (
     <header

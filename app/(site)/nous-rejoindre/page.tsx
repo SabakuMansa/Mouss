@@ -15,7 +15,6 @@ import {
   Handshake,
   MessageCircle,
 } from "lucide-react";
-import { PageHero } from "@/components/ui/PageHero";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Stagger, StaggerItem, RevealOnScroll } from "@/components/ui/RevealOnScroll";

@@ -1,6 +1,6 @@
 import type { ValueItem } from "@/lib/types";
 
-/** Verbatim from A PROPOS MOUS.html — "Nos valeurs". */
+/** Repris mot pour mot de l'ancien site (A PROPOS MOUS.html, section « Nos valeurs »). */
 export const values: ValueItem[] = [
   {
     title: "Esprit d'équipe",

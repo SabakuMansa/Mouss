@@ -38,7 +38,7 @@ function TickerRow({ ariaHidden = false }: { ariaHidden?: boolean }) {
   );
 }
 
-/** Decorative scoreboard-style ticker — adds a bit of energy/motion between sections. */
+/** Bandeau défilant façon tableau de score — apporte du rythme entre deux sections. */
 export function ActionTicker() {
   return (
     <div className="overflow-hidden border-y border-white/10 bg-navy-950 py-4" role="presentation">

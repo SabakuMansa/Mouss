@@ -1,6 +1,6 @@
 import type { HonorGroup } from "@/lib/types";
 
-/** Verbatim from A PROPOS MOUS.html — "Palmarès". */
+/** Repris mot pour mot de l'ancien site (A PROPOS MOUS.html, section « Palmarès »). */
 export const honors: HonorGroup[] = [
   {
     category: "Seniors",

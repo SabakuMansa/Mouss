@@ -17,7 +17,7 @@ const manrope = Manrope({
   display: "swap",
 });
 
-/** Bold athletic block font — used only for the "Les Mousquetaires" wordmark, echoing the jersey lettering. */
+/** Police épaisse et carrée, réservée au logo « Les Mousquetaires » — évoque le lettrage des maillots. */
 const bungee = Bungee({
   subsets: ["latin"],
   weight: "400",
@@ -73,7 +73,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body className="flex min-h-full flex-col antialiased">
         <script
           type="application/ld+json"
-          // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <EnvironmentBadge />

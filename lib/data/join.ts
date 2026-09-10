@@ -1,6 +1,6 @@
 import type { Advantage, RecruitProfile } from "@/lib/types";
 
-/** Verbatim from NOUS REJOINDRE.html. */
+/** Repris mot pour mot de l'ancien site (NOUS REJOINDRE.html). */
 export const recruitProfiles: RecruitProfile[] = [
   { title: "Joueurs", description: "Débutant ou expérimenté, rejoins nos sections U15, U18 ou Seniors." },
   { title: "Coachs", description: "Encadre nos équipes et participe au développement du club." },

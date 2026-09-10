@@ -1,9 +1,9 @@
 import type { SVGProps } from "react";
 
 /**
- * lucide-react dropped brand/trademark logos (Facebook, Instagram) — these
- * are minimal stroke-style equivalents kept visually consistent with the
- * rest of the Lucide icon set used across the site.
+ * lucide-react a retiré les logos de marque (Facebook, Instagram). Ces icônes
+ * sont des équivalents dessinés à la main, au même style de trait que le reste
+ * des icônes Lucide utilisées sur le site.
  */
 export function FacebookIcon(props: SVGProps<SVGSVGElement>) {
   return (

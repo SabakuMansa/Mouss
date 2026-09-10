@@ -12,7 +12,7 @@ export interface Player {
   name: string;
   heightCm?: string;
   weightKg?: string;
-  /** Path relative to /public, or null when no real photo exists (renders PlayerPlaceholder). */
+  /** Chemin relatif à /public, ou null si aucune vraie photo n'existe (affiche alors PlayerPlaceholder). */
   photo: string | null;
 }
 
@@ -34,7 +34,7 @@ export interface Match {
   dateTimeIso: string;
   venue: string;
   isHome: boolean;
-  /** Exact score text as published, order not asserted (see plan note on result fidelity). */
+  /** Score repris tel qu'il était publié ; on n'affirme pas quel camp correspond à quel chiffre. */
   result: string | null;
 }
 

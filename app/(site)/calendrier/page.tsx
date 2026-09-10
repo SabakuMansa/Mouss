@@ -30,7 +30,6 @@ export default async function SchedulePage() {
     <>
       <script
         type="application/ld+json"
-        // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <PageHero image="/images/hero/calendrier.jpg" imageAlt="Match des Mousquetaires" title="Nos matchs" />

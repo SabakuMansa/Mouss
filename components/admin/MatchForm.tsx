@@ -7,7 +7,7 @@ interface MatchFormValues {
   result?: string | null;
 }
 
-/** Reusable create/edit form for a match — fields match the `matches` table columns 1:1. */
+/** Formulaire d'ajout et de modification d'un match — un champ par colonne de la table `matches`. */
 export function MatchForm({
   action,
   defaultValues,
@@ -17,7 +17,7 @@ export function MatchForm({
   defaultValues?: MatchFormValues;
   submitLabel: string;
 }) {
-  // datetime-local inputs need "YYYY-MM-DDTHH:mm", Postgres gives back an ISO string.
+  // Le champ datetime-local attend "AAAA-MM-JJTHH:mm", alors que Postgres renvoie une date ISO.
   const dateTimeLocal = defaultValues?.date_time ? defaultValues.date_time.slice(0, 16) : "";
 
   return (
@@ -59,7 +59,7 @@ export function MatchForm({
         />
       </label>
       <label className="text-sm font-medium text-navy-900">
-        Résultat (optionnel, ex: "24 - 6")
+        Résultat (optionnel, ex&nbsp;: &laquo;&nbsp;24 - 6&nbsp;&raquo;)
         <input
           name="result"
           defaultValue={defaultValues?.result ?? ""}
